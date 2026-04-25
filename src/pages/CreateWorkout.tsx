@@ -478,23 +478,34 @@ export default function CreateWorkout() {
                           </div>
                           <h4 className="font-semibold text-foreground">{exercise.name}</h4>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                          onClick={() => toggleExercise(we.exerciseId)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                        <div className="flex items-center gap-0.5">
+                          <button
+                            type="button"
+                            onClick={() => duplicateExercise(idx)}
+                            className="p-1.5 rounded-lg text-muted-foreground hover:text-primary transition-colors"
+                            aria-label="Duplicate exercise"
+                          >
+                            <Copy className="w-3.5 h-3.5" />
+                          </button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                            onClick={() => toggleExercise(we.exerciseId)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </div>
                       
                       <div className="space-y-2">
                         {/* Only show grid header if there are non-challenge sets */}
                         {we.sets.some((s) => (s.setType || 'normal') !== 'challenge') && (
-                          <div className="grid grid-cols-[48px_1fr_64px_48px] gap-2 text-xs text-muted-foreground px-1">
+                          <div className="grid grid-cols-[48px_1fr_64px_32px_32px] gap-1.5 text-xs text-muted-foreground px-1">
                             <span className="text-center">Set</span>
                             <span>Weight (kg)</span>
                             <span className="text-center">Intensity</span>
+                            <span></span>
                             <span></span>
                           </div>
                         )}
@@ -507,12 +518,16 @@ export default function CreateWorkout() {
                             setType={set.setType || 'normal'}
                             intensity={set.intensity || '2rir'}
                             targetReps={set.targetReps}
+                            setNote={set.setNote}
+                            noteOpen={expandedSetNotes.has(`${we.exerciseId}-${setIndex}`)}
                             isOnlySet={we.sets.length === 1}
                             onWeightChange={(weight) => updateSetWeight(we.exerciseId, setIndex, weight)}
                             onOpenIntensityPicker={() => setIntensityPicker({ exerciseId: we.exerciseId, setIndex })}
                             onOpenSetTypePicker={() => setSetTypePicker({ exerciseId: we.exerciseId, setIndex })}
                             onRemoveSet={() => removeSet(we.exerciseId, setIndex)}
                             onTargetRepsChange={(reps) => updateSetTargetReps(we.exerciseId, setIndex, reps)}
+                            onSetNoteChange={(note) => updateSetNote(we.exerciseId, setIndex, note)}
+                            onToggleNote={() => toggleSetNote(we.exerciseId, setIndex)}
                           />
                         ))}
                         
