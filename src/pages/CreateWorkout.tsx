@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Plus, Search, Trash2, ArrowLeft, ChevronRight, X, Undo2 } from 'lucide-react';
+import { Plus, Search, Trash2, ArrowLeft, ChevronRight, X, Undo2, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -58,6 +58,7 @@ export default function CreateWorkout() {
   const [intensityPicker, setIntensityPicker] = useState<{ exerciseId: string; setIndex: number } | null>(null);
   const [showCreateExercise, setShowCreateExercise] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [expandedSetNotes, setExpandedSetNotes] = useState<Set<string>>(new Set());
   
   const workouts = useWorkoutStore((state) => state.workouts);
   const addWorkout = useWorkoutStore((state) => state.addWorkout);
