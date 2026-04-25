@@ -1,7 +1,8 @@
 import { memo, useCallback } from 'react';
-import { Plus, Minus, Trash2, ChevronDown, Target } from 'lucide-react';
+import { Plus, Minus, Trash2, ChevronDown, Target, StickyNote } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 import { 
   SetType,
   SET_TYPE_SHORT_LABELS,
@@ -15,12 +16,16 @@ interface CreateSetRowProps {
   setType: SetType;
   intensity: IntensityLevel;
   targetReps?: number;
+  setNote?: string;
+  noteOpen?: boolean;
   isOnlySet: boolean;
   onWeightChange: (weight: number) => void;
   onOpenIntensityPicker: () => void;
   onOpenSetTypePicker: () => void;
   onRemoveSet: () => void;
   onTargetRepsChange?: (reps: number) => void;
+  onSetNoteChange?: (note: string) => void;
+  onToggleNote?: () => void;
 }
 
 export const CreateSetRow = memo(function CreateSetRow({
