@@ -1,7 +1,8 @@
 import { memo, useCallback } from 'react';
-import { Plus, Minus, Trash2, ChevronDown, Target } from 'lucide-react';
+import { Plus, Minus, Trash2, ChevronDown, Target, StickyNote } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 import { 
   SetType,
   SET_TYPE_SHORT_LABELS,
@@ -15,12 +16,16 @@ interface CreateSetRowProps {
   setType: SetType;
   intensity: IntensityLevel;
   targetReps?: number;
+  setNote?: string;
+  noteOpen?: boolean;
   isOnlySet: boolean;
   onWeightChange: (weight: number) => void;
   onOpenIntensityPicker: () => void;
   onOpenSetTypePicker: () => void;
   onRemoveSet: () => void;
   onTargetRepsChange?: (reps: number) => void;
+  onSetNoteChange?: (note: string) => void;
+  onToggleNote?: () => void;
 }
 
 export const CreateSetRow = memo(function CreateSetRow({
@@ -29,14 +34,43 @@ export const CreateSetRow = memo(function CreateSetRow({
   setType,
   intensity,
   targetReps,
+  setNote,
+  noteOpen,
   isOnlySet,
   onWeightChange,
   onOpenIntensityPicker,
   onOpenSetTypePicker,
   onRemoveSet,
   onTargetRepsChange,
+  onSetNoteChange,
+  onToggleNote,
 }: CreateSetRowProps) {
   const isNormal = setType === 'normal';
+  const showNoteInput = noteOpen || !!setNote;
+  const noteButton = onToggleNote ? (
+    <button
+      type="button"
+      onClick={onToggleNote}
+      className={cn(
+        'h-8 w-8 rounded-md flex items-center justify-center transition-colors shrink-0',
+        setNote
+          ? 'text-primary'
+          : 'text-muted-foreground/50 hover:text-muted-foreground',
+      )}
+      aria-label="Toggle set note"
+    >
+      <StickyNote className="w-3.5 h-3.5" />
+    </button>
+  ) : null;
+  const noteInput = showNoteInput && onSetNoteChange ? (
+    <input
+      type="text"
+      value={setNote || ''}
+      onChange={(e) => onSetNoteChange(e.target.value)}
+      placeholder="Note for this set..."
+      className="bg-transparent border-b border-dashed border-border/50 text-xs text-muted-foreground focus:text-foreground focus:border-primary/40 focus:outline-none h-7 w-full px-0"
+    />
+  ) : null;
   const isChallenge = setType === 'challenge';
 
   const handleWeightDecrement = useCallback(() => {
@@ -62,7 +96,7 @@ export const CreateSetRow = memo(function CreateSetRow({
   if (isChallenge) {
     return (
       <div className="p-3 bg-primary/5 rounded-lg border border-primary/20 space-y-3">
-        {/* Top row: type selector + delete */}
+        {/* Top row: type selector + note + delete */}
         <div className="flex items-center justify-between">
           <Button
             variant="ghost"
@@ -74,15 +108,18 @@ export const CreateSetRow = memo(function CreateSetRow({
             Challenge Set
             <ChevronDown className="w-3 h-3 opacity-50" />
           </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7 text-muted-foreground hover:text-destructive"
-            onClick={onRemoveSet}
-            disabled={isOnlySet}
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
+          <div className="flex items-center gap-0.5">
+            {noteButton}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 text-muted-foreground hover:text-destructive"
+              onClick={onRemoveSet}
+              disabled={isOnlySet}
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
 
         {/* Weight row */}
@@ -120,53 +157,61 @@ export const CreateSetRow = memo(function CreateSetRow({
             {intensity ? INTENSITY_LABELS[intensity] : '2 RIR'}
           </Button>
         </div>
+
+        {noteInput}
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-[48px_1fr_64px_48px] gap-2 items-center p-2 bg-background/50 rounded-lg">
-      {/* Set column */}
-      <Button
-        variant="ghost"
-        size="sm"
-        className={`h-9 px-1 text-xs font-medium text-foreground ${!isNormal ? 'text-primary' : ''}`}
-        onClick={onOpenSetTypePicker}
-      >
-        {isNormal ? (
-          <span className="text-sm text-foreground">{index + 1}</span>
-        ) : (
-          <span className="truncate text-primary">{SET_TYPE_SHORT_LABELS[setType]}</span>
-        )}
-        <ChevronDown className="w-3 h-3 ml-0.5 opacity-50 shrink-0" />
-      </Button>
-      
-      {/* Weight */}
-      <div className="flex items-center gap-1">
-        <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 text-foreground" onClick={handleWeightDecrement}>
-          <Minus className="w-3 h-3" />
+    <div className="space-y-1.5">
+      <div className="grid grid-cols-[48px_1fr_64px_32px_32px] gap-1.5 items-center p-2 bg-background/50 rounded-lg">
+        {/* Set column */}
+        <Button
+          variant="ghost"
+          size="sm"
+          className={`h-9 px-1 text-xs font-medium text-foreground ${!isNormal ? 'text-primary' : ''}`}
+          onClick={onOpenSetTypePicker}
+        >
+          {isNormal ? (
+            <span className="text-sm text-foreground">{index + 1}</span>
+          ) : (
+            <span className="truncate text-primary">{SET_TYPE_SHORT_LABELS[setType]}</span>
+          )}
+          <ChevronDown className="w-3 h-3 ml-0.5 opacity-50 shrink-0" />
         </Button>
-        <Input type="number" value={weight} onChange={handleWeightInput} className="h-9 text-center min-w-0 text-foreground bg-background/80" />
-        <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 text-foreground" onClick={handleWeightIncrement}>
-          <Plus className="w-3 h-3" />
+        
+        {/* Weight */}
+        <div className="flex items-center gap-1">
+          <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 text-foreground" onClick={handleWeightDecrement}>
+            <Minus className="w-3 h-3" />
+          </Button>
+          <Input type="number" value={weight} onChange={handleWeightInput} className="h-9 text-center min-w-0 text-foreground bg-background/80" />
+          <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 text-foreground" onClick={handleWeightIncrement}>
+            <Plus className="w-3 h-3" />
+          </Button>
+        </div>
+        
+        {/* Intensity */}
+        <Button variant="outline" size="sm" className="h-9 text-xs px-1 text-foreground" onClick={onOpenIntensityPicker}>
+          <span className="truncate">{intensity ? INTENSITY_LABELS[intensity] : '2 RIR'}</span>
+        </Button>
+
+        {/* Note toggle */}
+        {noteButton}
+        
+        {/* Delete */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 text-muted-foreground hover:text-destructive"
+          onClick={onRemoveSet}
+          disabled={isOnlySet}
+        >
+          <Trash2 className="w-4 h-4" />
         </Button>
       </div>
-      
-      {/* Intensity */}
-      <Button variant="outline" size="sm" className="h-9 text-xs px-1 text-foreground" onClick={onOpenIntensityPicker}>
-        <span className="truncate">{intensity ? INTENSITY_LABELS[intensity] : '2 RIR'}</span>
-      </Button>
-      
-      {/* Delete */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className="h-8 w-8 text-muted-foreground hover:text-destructive"
-        onClick={onRemoveSet}
-        disabled={isOnlySet}
-      >
-        <Trash2 className="w-4 h-4" />
-      </Button>
+      {noteInput && <div className="px-2">{noteInput}</div>}
     </div>
   );
 });

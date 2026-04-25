@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Plus, Search, Trash2, ArrowLeft, ChevronRight, X, Undo2 } from 'lucide-react';
+import { Plus, Search, Trash2, ArrowLeft, ChevronRight, X, Undo2, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -58,6 +58,7 @@ export default function CreateWorkout() {
   const [intensityPicker, setIntensityPicker] = useState<{ exerciseId: string; setIndex: number } | null>(null);
   const [showCreateExercise, setShowCreateExercise] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [expandedSetNotes, setExpandedSetNotes] = useState<Set<string>>(new Set());
   
   const workouts = useWorkoutStore((state) => state.workouts);
   const addWorkout = useWorkoutStore((state) => state.addWorkout);
@@ -241,6 +242,43 @@ export default function CreateWorkout() {
           : e
       )
     );
+  };
+
+  const updateSetNote = (exerciseId: string, setIndex: number, note: string) => {
+    setSelectedExercises((prev) =>
+      prev.map((e) =>
+        e.exerciseId === exerciseId
+          ? {
+              ...e,
+              sets: e.sets.map((s, i) =>
+                i === setIndex ? { ...s, setNote: note } : s
+              ),
+            }
+          : e
+      )
+    );
+  };
+
+  const toggleSetNote = (exerciseId: string, setIndex: number) => {
+    const key = `${exerciseId}-${setIndex}`;
+    setExpandedSetNotes((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
+
+  const duplicateExercise = (idx: number) => {
+    saveSnapshot();
+    setSelectedExercises((prev) => {
+      const exercise = prev[idx];
+      if (!exercise) return prev;
+      const duplicate = { ...exercise, sets: exercise.sets.map((s) => ({ ...s })) };
+      const updated = [...prev];
+      updated.splice(idx + 1, 0, duplicate);
+      return updated;
+    });
   };
 
   const handleInlineExerciseCreated = (exerciseId: string) => {
@@ -440,23 +478,34 @@ export default function CreateWorkout() {
                           </div>
                           <h4 className="font-semibold text-foreground">{exercise.name}</h4>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                          onClick={() => toggleExercise(we.exerciseId)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                        <div className="flex items-center gap-0.5">
+                          <button
+                            type="button"
+                            onClick={() => duplicateExercise(idx)}
+                            className="p-1.5 rounded-lg text-muted-foreground hover:text-primary transition-colors"
+                            aria-label="Duplicate exercise"
+                          >
+                            <Copy className="w-3.5 h-3.5" />
+                          </button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                            onClick={() => toggleExercise(we.exerciseId)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </div>
                       
                       <div className="space-y-2">
                         {/* Only show grid header if there are non-challenge sets */}
                         {we.sets.some((s) => (s.setType || 'normal') !== 'challenge') && (
-                          <div className="grid grid-cols-[48px_1fr_64px_48px] gap-2 text-xs text-muted-foreground px-1">
+                          <div className="grid grid-cols-[48px_1fr_64px_32px_32px] gap-1.5 text-xs text-muted-foreground px-1">
                             <span className="text-center">Set</span>
                             <span>Weight (kg)</span>
                             <span className="text-center">Intensity</span>
+                            <span></span>
                             <span></span>
                           </div>
                         )}
@@ -469,12 +518,16 @@ export default function CreateWorkout() {
                             setType={set.setType || 'normal'}
                             intensity={set.intensity || '2rir'}
                             targetReps={set.targetReps}
+                            setNote={set.setNote}
+                            noteOpen={expandedSetNotes.has(`${we.exerciseId}-${setIndex}`)}
                             isOnlySet={we.sets.length === 1}
                             onWeightChange={(weight) => updateSetWeight(we.exerciseId, setIndex, weight)}
                             onOpenIntensityPicker={() => setIntensityPicker({ exerciseId: we.exerciseId, setIndex })}
                             onOpenSetTypePicker={() => setSetTypePicker({ exerciseId: we.exerciseId, setIndex })}
                             onRemoveSet={() => removeSet(we.exerciseId, setIndex)}
                             onTargetRepsChange={(reps) => updateSetTargetReps(we.exerciseId, setIndex, reps)}
+                            onSetNoteChange={(note) => updateSetNote(we.exerciseId, setIndex, note)}
+                            onToggleNote={() => toggleSetNote(we.exerciseId, setIndex)}
                           />
                         ))}
                         
