@@ -50,6 +50,7 @@ interface FlatSet {
   isChallenge: boolean;
   targetReps?: number;
   notes?: string;
+  setNote?: string;
 }
 
 export function GuidedWorkoutView({
