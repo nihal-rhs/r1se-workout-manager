@@ -52,24 +52,34 @@ const History = () => {
             <h2 className="text-xl font-bold tracking-tight">History</h2>
             <p className="text-sm text-muted-foreground">Your completed workouts</p>
           </div>
-          {/* View Switcher */}
+          {/* View Switcher (plain buttons — avoids default glow) */}
           <div className="flex items-center gap-1 bg-secondary rounded-xl p-1">
-            <Button
-              variant={viewMode === 'calendar' ? 'default' : 'ghost'}
-              size="icon"
-              className="h-8 w-8 rounded-lg"
+            <button
+              type="button"
+              className={cn(
+                "h-8 w-8 rounded-lg flex items-center justify-center transition-all duration-150",
+                viewMode === 'calendar'
+                  ? "bg-primary/20 text-primary"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
               onClick={() => setViewMode('calendar')}
+              aria-label="Calendar view"
             >
               <CalendarDays className="w-4 h-4" />
-            </Button>
-            <Button
-              variant={viewMode === 'list' ? 'default' : 'ghost'}
-              size="icon"
-              className="h-8 w-8 rounded-lg"
+            </button>
+            <button
+              type="button"
+              className={cn(
+                "h-8 w-8 rounded-lg flex items-center justify-center transition-all duration-150",
+                viewMode === 'list'
+                  ? "bg-primary/20 text-primary"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
               onClick={() => setViewMode('list')}
+              aria-label="List view"
             >
               <List className="w-4 h-4" />
-            </Button>
+            </button>
           </div>
         </div>
 
