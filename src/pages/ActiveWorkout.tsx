@@ -712,13 +712,13 @@ export default function ActiveWorkout() {
         {/* Exercise List */}
         <div className="flex-1 overflow-y-auto">
           <div className="space-y-6 py-4">
-            {workoutExercises.map((we) => {
+            {workoutExercises.map((we, weIdx) => {
               const exercise = allExercises.find((e) => e.id === we.exerciseId);
               if (!exercise) return null;
               const sets = exerciseLogs[we.exerciseId] || [];
 
               return (
-                <div key={we.exerciseId} className="space-y-3">
+                <div key={`${we.exerciseId}-${weIdx}`} className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center flex-wrap gap-y-1">
                       <h3 className="font-semibold text-foreground">{exercise.name}</h3>
