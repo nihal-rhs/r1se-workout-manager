@@ -117,7 +117,7 @@ export default function AuthGate() {
 
       {/* Footer mark */}
       <footer className="relative z-10 pb-6 flex justify-center">
-        <div className="flex items-center gap-2 text-[10px] tracking-[0.3em] uppercase text-muted-foreground/60">
+        <div className="flex items-center gap-2 text-[11px] tracking-[0.3em] uppercase text-muted-foreground/60">
           <span className="h-1 w-1 rounded-full bg-primary/70 animate-pulse" />
           <span>Built for lifters</span>
         </div>
