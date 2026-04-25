@@ -65,21 +65,21 @@ export default function AuthGate() {
               <R1SELogo className="relative text-6xl text-primary" />
             </div>
             <div className="flex flex-col items-center gap-2">
-              <div className="h-px w-12 bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
-              <p className="text-muted-foreground text-[11px] tracking-[0.3em] uppercase font-medium">
+              <div className="h-px w-14 bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
+              <p className="text-muted-foreground text-[13px] tracking-[0.3em] uppercase font-medium">
                 Train Smart · R1SE Harder
               </p>
             </div>
           </div>
 
           {/* Feature trio */}
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-10">
             {features.map(({ icon: Icon, label }) => (
-              <div key={label} className="flex flex-col items-center gap-2">
-                <div className="h-10 w-10 rounded-full border border-border/60 bg-card/40 flex items-center justify-center backdrop-blur-sm">
-                  <Icon className="w-4 h-4 text-primary" strokeWidth={2} />
+              <div key={label} className="flex flex-col items-center gap-2.5">
+                <div className="h-12 w-12 rounded-full border border-border/60 bg-card/40 flex items-center justify-center backdrop-blur-sm">
+                  <Icon className="w-5 h-5 text-primary" strokeWidth={2} />
                 </div>
-                <span className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground font-medium">
+                <span className="text-[12px] tracking-[0.18em] uppercase text-muted-foreground font-medium">
                   {label}
                 </span>
               </div>
