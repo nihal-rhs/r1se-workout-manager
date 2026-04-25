@@ -10,9 +10,9 @@ export interface Exercise {
   isCustom?: boolean;
 }
 
-export type SetType = 'normal' | 'superset' | 'alternating' | 'challenge';
+export type SetType = 'normal' | 'superset' | 'alternating' | 'challenge' | 'unspecified';
 
-export type IntensityLevel = 'warmup' | '2rir' | '1rir' | 'failure';
+export type IntensityLevel = 'warmup' | '2rir' | '1rir' | 'failure' | 'unspecified';
 
 export interface WorkoutSet {
   weight: number;
@@ -20,6 +20,7 @@ export interface WorkoutSet {
   setType?: SetType;
   intensity?: IntensityLevel;
   targetReps?: number; // For challenge sets: total reps to accumulate
+  setNote?: string;
 }
 
 export interface WorkoutExercise {
@@ -41,6 +42,7 @@ export interface CompletedSet {
   intensity?: IntensityLevel;
   setType?: SetType;
   targetReps?: number;
+  setNote?: string;
 }
 
 export interface WorkoutLog {
@@ -61,6 +63,7 @@ export const SET_TYPE_LABELS: Record<SetType, string> = {
   superset: 'Super Set',
   alternating: 'Alt Super Set',
   challenge: 'Challenge Set',
+  unspecified: '—',
 };
 
 export const SET_TYPE_SHORT_LABELS: Record<SetType, string> = {
@@ -68,6 +71,7 @@ export const SET_TYPE_SHORT_LABELS: Record<SetType, string> = {
   superset: 'S',
   alternating: 'A',
   challenge: 'C',
+  unspecified: '—',
 };
 
 export const INTENSITY_LABELS: Record<IntensityLevel, string> = {
@@ -75,6 +79,7 @@ export const INTENSITY_LABELS: Record<IntensityLevel, string> = {
   '2rir': '2 RIR',
   '1rir': '1 RIR',
   failure: 'Failure',
+  unspecified: '—',
 };
 
 // Workout Plan Types
