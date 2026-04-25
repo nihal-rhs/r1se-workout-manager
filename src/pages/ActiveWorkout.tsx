@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { Plus, Pencil, Trash2, X, Pause, ArrowLeftRight, Info } from 'lucide-react';
+import { Plus, Pencil, Trash2, X, Pause, ArrowLeftRight, Info, Copy as Copy2, StickyNote, GripVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PausePreferenceDialog } from '@/components/PausePreferenceDialog';
 import { Input } from '@/components/ui/input';
-import { 
-  IntensityLevel, 
+import {
+  IntensityLevel,
   SetType,
   SET_TYPE_LABELS,
   INTENSITY_LABELS,
@@ -50,13 +50,14 @@ interface SetLog {
   completed: boolean;
   targetReps?: number;
   challengeAccumulatedReps?: number;
+  setNote?: string;
 }
 
 // Generate reps options
 const REPS_OPTIONS = Array.from({ length: 101 }, (_, i) => i);
 const CHALLENGE_REPS_OPTIONS = Array.from({ length: 201 }, (_, i) => i);
-const INTENSITY_OPTIONS: IntensityLevel[] = ['warmup', '2rir', '1rir', 'failure'];
-const SET_TYPE_OPTIONS: SetType[] = ['normal', 'superset', 'alternating', 'challenge'];
+const INTENSITY_OPTIONS: IntensityLevel[] = ['unspecified', 'warmup', '2rir', '1rir', 'failure'];
+const SET_TYPE_OPTIONS: SetType[] = ['unspecified', 'normal', 'superset', 'alternating', 'challenge'];
 
 export default function ActiveWorkout() {
   const navigate = useNavigate();
