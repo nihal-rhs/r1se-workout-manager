@@ -98,6 +98,13 @@ export function GuidedEditSheet({
     ));
   };
 
+  const updateSetNote = (exerciseId: string, setIndex: number, setNote: string) => {
+    setEditExercises(prev => prev.map(we =>
+      we.exerciseId === exerciseId
+        ? { ...we, sets: we.sets.map((s, i) => i === setIndex ? { ...s, setNote } : s) }
+        : we
+    ));
+  };
   const addSetToExercise = (exerciseId: string) => {
     setEditExercises(prev => prev.map(we => {
       if (we.exerciseId !== exerciseId) return we;
