@@ -50,6 +50,7 @@ interface FlatSet {
   isChallenge: boolean;
   targetReps?: number;
   notes?: string;
+  setNote?: string;
 }
 
 export function GuidedWorkoutView({
@@ -84,6 +85,7 @@ export function GuidedWorkoutView({
           isChallenge: set.setType === 'challenge',
           targetReps: set.targetReps,
           notes: we.notes,
+          setNote: set.setNote,
         });
       });
     });
@@ -543,6 +545,11 @@ export function GuidedWorkoutView({
             onClick={() => setShowNotePopover(false)}
           >
             {currentSet.notes}
+          </p>
+        )}
+        {currentSet.setNote && (
+          <p className="mt-2 inline-block text-xs text-muted-foreground italic bg-secondary/40 border border-dashed border-border rounded-lg px-3 py-1.5 max-w-xs">
+            {currentSet.setNote}
           </p>
         )}
         {isChallenge ? (
