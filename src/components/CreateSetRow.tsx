@@ -34,14 +34,43 @@ export const CreateSetRow = memo(function CreateSetRow({
   setType,
   intensity,
   targetReps,
+  setNote,
+  noteOpen,
   isOnlySet,
   onWeightChange,
   onOpenIntensityPicker,
   onOpenSetTypePicker,
   onRemoveSet,
   onTargetRepsChange,
+  onSetNoteChange,
+  onToggleNote,
 }: CreateSetRowProps) {
   const isNormal = setType === 'normal';
+  const showNoteInput = noteOpen || !!setNote;
+  const noteButton = onToggleNote ? (
+    <button
+      type="button"
+      onClick={onToggleNote}
+      className={cn(
+        'h-8 w-8 rounded-md flex items-center justify-center transition-colors shrink-0',
+        setNote
+          ? 'text-primary'
+          : 'text-muted-foreground/50 hover:text-muted-foreground',
+      )}
+      aria-label="Toggle set note"
+    >
+      <StickyNote className="w-3.5 h-3.5" />
+    </button>
+  ) : null;
+  const noteInput = showNoteInput && onSetNoteChange ? (
+    <input
+      type="text"
+      value={setNote || ''}
+      onChange={(e) => onSetNoteChange(e.target.value)}
+      placeholder="Note for this set..."
+      className="bg-transparent border-b border-dashed border-border/50 text-xs text-muted-foreground focus:text-foreground focus:border-primary/40 focus:outline-none h-7 w-full px-0"
+    />
+  ) : null;
   const isChallenge = setType === 'challenge';
 
   const handleWeightDecrement = useCallback(() => {
