@@ -244,6 +244,43 @@ export default function CreateWorkout() {
     );
   };
 
+  const updateSetNote = (exerciseId: string, setIndex: number, note: string) => {
+    setSelectedExercises((prev) =>
+      prev.map((e) =>
+        e.exerciseId === exerciseId
+          ? {
+              ...e,
+              sets: e.sets.map((s, i) =>
+                i === setIndex ? { ...s, setNote: note } : s
+              ),
+            }
+          : e
+      )
+    );
+  };
+
+  const toggleSetNote = (exerciseId: string, setIndex: number) => {
+    const key = `${exerciseId}-${setIndex}`;
+    setExpandedSetNotes((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
+
+  const duplicateExercise = (idx: number) => {
+    saveSnapshot();
+    setSelectedExercises((prev) => {
+      const exercise = prev[idx];
+      if (!exercise) return prev;
+      const duplicate = { ...exercise, sets: exercise.sets.map((s) => ({ ...s })) };
+      const updated = [...prev];
+      updated.splice(idx + 1, 0, duplicate);
+      return updated;
+    });
+  };
+
   const handleInlineExerciseCreated = (exerciseId: string) => {
     saveSnapshot();
     setSelectedExercises((prev) => [
