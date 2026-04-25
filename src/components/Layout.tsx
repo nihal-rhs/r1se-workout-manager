@@ -64,7 +64,7 @@ export function Layout({ children, hideNav = false }: LayoutProps) {
               )}
               overrideColor={isOverlayOpen ? undefined : undefined}
             />
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 min-h-[40px]">
               <GoogleAuthButton />
               {showMessages && (
                 <button
