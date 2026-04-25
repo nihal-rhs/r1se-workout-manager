@@ -11,6 +11,7 @@ export interface SessionSetLog {
   completed: boolean;
   targetReps?: number;
   challengeAccumulatedReps?: number;
+  setNote?: string;
 }
 
 export interface ActiveSession {

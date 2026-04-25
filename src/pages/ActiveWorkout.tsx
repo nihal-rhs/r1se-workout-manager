@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { Plus, Pencil, Trash2, X, Pause, ArrowLeftRight, Info } from 'lucide-react';
+import { Plus, Pencil, Trash2, X, Pause, ArrowLeftRight, Info, Copy as Copy2, StickyNote, GripVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PausePreferenceDialog } from '@/components/PausePreferenceDialog';
 import { Input } from '@/components/ui/input';
-import { 
-  IntensityLevel, 
+import {
+  IntensityLevel,
   SetType,
   SET_TYPE_LABELS,
   INTENSITY_LABELS,
@@ -50,13 +50,14 @@ interface SetLog {
   completed: boolean;
   targetReps?: number;
   challengeAccumulatedReps?: number;
+  setNote?: string;
 }
 
 // Generate reps options
 const REPS_OPTIONS = Array.from({ length: 101 }, (_, i) => i);
 const CHALLENGE_REPS_OPTIONS = Array.from({ length: 201 }, (_, i) => i);
-const INTENSITY_OPTIONS: IntensityLevel[] = ['warmup', '2rir', '1rir', 'failure'];
-const SET_TYPE_OPTIONS: SetType[] = ['normal', 'superset', 'alternating', 'challenge'];
+const INTENSITY_OPTIONS: IntensityLevel[] = ['unspecified', 'warmup', '2rir', '1rir', 'failure'];
+const SET_TYPE_OPTIONS: SetType[] = ['unspecified', 'normal', 'superset', 'alternating', 'challenge'];
 
 export default function ActiveWorkout() {
   const navigate = useNavigate();
@@ -100,6 +101,7 @@ export default function ActiveWorkout() {
   const [setTypePicker, setSetTypePicker] = useState<{ exerciseId: string; setIndex: number } | null>(null);
   const [challengeRepsPicker, setChallengeRepsPicker] = useState<{ exerciseId: string; setIndex: number } | null>(null);
   const [showCreateExercise, setShowCreateExercise] = useState(false);
+  const [expandedSetNotes, setExpandedSetNotes] = useState<Set<string>>(new Set());
 
   // Captured picker values (FIX 1: avoid stale closures)
   const [currentPickerRepsValue, setCurrentPickerRepsValue] = useState(0);
@@ -344,9 +346,10 @@ export default function ActiveWorkout() {
             .map((s): CompletedSet => ({
               reps: s.setType === 'challenge' ? (s.challengeAccumulatedReps || s.reps || 0) : (s.reps || 0),
               weight: s.weight,
-              intensity: s.intensity || undefined,
-              setType: s.setType || undefined,
+              intensity: s.intensity && s.intensity !== 'unspecified' ? s.intensity : undefined,
+              setType: s.setType && s.setType !== 'unspecified' ? s.setType : undefined,
               targetReps: s.targetReps,
+              setNote: s.setNote || undefined,
             })),
         };
       });
@@ -442,9 +445,10 @@ export default function ActiveWorkout() {
       const completed = sets.filter(s => s.completed).map(s => ({
         reps: s.setType === 'challenge' ? (s.challengeAccumulatedReps || s.reps || 0) : (s.reps || 0),
         weight: s.weight,
-        intensity: s.intensity || undefined,
-        setType: s.setType || undefined,
+        intensity: s.intensity && s.intensity !== 'unspecified' ? s.intensity : undefined,
+        setType: s.setType && s.setType !== 'unspecified' ? s.setType : undefined,
         targetReps: s.targetReps,
+        setNote: s.setNote || undefined,
       }));
       if (completed.length > 0) {
         completedSetsMap[we.exerciseId] = completed;
@@ -708,13 +712,13 @@ export default function ActiveWorkout() {
         {/* Exercise List */}
         <div className="flex-1 overflow-y-auto">
           <div className="space-y-6 py-4">
-            {workoutExercises.map((we) => {
+            {workoutExercises.map((we, weIdx) => {
               const exercise = allExercises.find((e) => e.id === we.exerciseId);
               if (!exercise) return null;
               const sets = exerciseLogs[we.exerciseId] || [];
 
               return (
-                <div key={we.exerciseId} className="space-y-3">
+                <div key={`${we.exerciseId}-${weIdx}`} className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center flex-wrap gap-y-1">
                       <h3 className="font-semibold text-foreground">{exercise.name}</h3>
@@ -729,14 +733,31 @@ export default function ActiveWorkout() {
                       )}
                     </div>
                     {isEditMode && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                        onClick={() => removeExercise(we.exerciseId)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => {
+                            const idx = workoutExercises.findIndex(x => x.exerciseId === we.exerciseId);
+                            if (idx === -1) return;
+                            const exercise = workoutExercises[idx];
+                            const duplicate: WorkoutExercise = { ...exercise, sets: exercise.sets.map(s => ({ ...s })) };
+                            const updated = [...workoutExercises];
+                            updated.splice(idx + 1, 0, duplicate);
+                            setWorkoutExercises(updated);
+                          }}
+                          className="p-1.5 rounded-lg text-muted-foreground hover:text-primary transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+                          title="Duplicate exercise"
+                        >
+                          <Copy2 className="w-3.5 h-3.5" />
+                        </button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                          onClick={() => removeExercise(we.exerciseId)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
                     )}
                   </div>
                   {activeNoteExerciseId === we.exerciseId && we.notes && (
@@ -753,28 +774,62 @@ export default function ActiveWorkout() {
                       <span></span>
                     </div>
                     
-                    {sets.map((set, i) => (
-                      <SetRow
-                        key={i}
-                        index={i}
-                        weight={set.weight}
-                        reps={set.reps}
-                        intensity={set.intensity}
-                        setType={set.setType || 'normal'}
-                        completed={set.completed}
-                        isEditMode={isEditMode}
-                        isOnlySet={sets.length === 1}
-                        targetReps={set.targetReps}
-                        challengeAccumulatedReps={set.challengeAccumulatedReps}
-                        onWeightChange={(weight) => updateSetLog(we.exerciseId, i, 'weight', weight)}
-                        onOpenRepsPicker={() => openRepsPicker(we.exerciseId, i)}
-                        onOpenIntensityPicker={() => openIntensityPicker(we.exerciseId, i)}
-                        onOpenSetTypePicker={() => openSetTypePicker(we.exerciseId, i)}
-                        onToggleComplete={() => toggleSetComplete(we.exerciseId, i)}
-                        onRemoveSet={() => removeSetFromExercise(we.exerciseId, i)}
-                      />
-                    ))}
-                    
+                    {sets.map((set, i) => {
+                      const noteKey = `${we.exerciseId}-${i}`;
+                      const noteOpen = expandedSetNotes.has(noteKey);
+                      const note = set.setNote || '';
+                      const toggleNote = () => {
+                        setExpandedSetNotes(prev => {
+                          const next = new Set(prev);
+                          if (next.has(noteKey)) next.delete(noteKey); else next.add(noteKey);
+                          return next;
+                        });
+                      };
+                      return (
+                        <div key={i} className="space-y-1">
+                          <SetRow
+                            index={i}
+                            weight={set.weight}
+                            reps={set.reps}
+                            intensity={set.intensity}
+                            setType={set.setType || 'normal'}
+                            completed={set.completed}
+                            isEditMode={isEditMode}
+                            isOnlySet={sets.length === 1}
+                            targetReps={set.targetReps}
+                            challengeAccumulatedReps={set.challengeAccumulatedReps}
+                            onWeightChange={(weight) => updateSetLog(we.exerciseId, i, 'weight', weight)}
+                            onOpenRepsPicker={() => openRepsPicker(we.exerciseId, i)}
+                            onOpenIntensityPicker={() => openIntensityPicker(we.exerciseId, i)}
+                            onOpenSetTypePicker={() => openSetTypePicker(we.exerciseId, i)}
+                            onToggleComplete={() => toggleSetComplete(we.exerciseId, i)}
+                            onRemoveSet={() => removeSetFromExercise(we.exerciseId, i)}
+                          />
+                          <div className="flex items-center gap-2 px-1">
+                            <button
+                              onClick={toggleNote}
+                              className={`flex items-center justify-center min-w-[44px] min-h-[28px] text-[10px] transition-colors ${note ? 'text-primary' : 'text-muted-foreground/60 hover:text-muted-foreground'}`}
+                              title="Set note"
+                            >
+                              <StickyNote className="w-3 h-3" />
+                            </button>
+                            {noteOpen ? (
+                              <input
+                                type="text"
+                                value={note}
+                                onChange={(e) => updateSetLog(we.exerciseId, i, 'setNote' as keyof SetLog, e.target.value)}
+                                placeholder="Note for this set..."
+                                className="flex-1 bg-transparent border-b border-dashed border-border/50 text-xs text-muted-foreground focus:text-foreground focus:border-primary/40 focus:outline-none h-7 px-0"
+                                autoFocus
+                              />
+                            ) : note ? (
+                              <span className="flex-1 text-[10px] text-muted-foreground italic truncate">"{note}"</span>
+                            ) : null}
+                          </div>
+                        </div>
+                      );
+                    })}
+
                     {isEditMode && (
                       <Button
                         variant="outline"

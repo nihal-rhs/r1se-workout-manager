@@ -91,9 +91,23 @@ export function ExerciseMultiSelectSheet({
             </div>
           </div>
 
+          {/* Create new exercise — always pinned, no scroll required */}
+          <button
+            onClick={() => setShowCreate(true)}
+            className="w-full flex items-center gap-3 px-4 py-3 border-b border-border bg-background text-primary hover:bg-primary/5 transition-colors shrink-0"
+          >
+            <div className="w-8 h-8 rounded-lg bg-primary/15 flex items-center justify-center shrink-0">
+              <Plus className="w-4 h-4" />
+            </div>
+            <div className="text-left">
+              <p className="text-sm font-semibold">Create New Exercise</p>
+              <p className="text-[10px] text-muted-foreground">Add a custom exercise to your library</p>
+            </div>
+          </button>
+
           {/* Exercise list */}
           <div className="flex-1 overflow-y-auto px-4">
-            <div className="space-y-2 pb-2">
+            <div className="space-y-2 py-2">
               {filtered.map((ex) => {
                 const isExisting = existingExerciseIds.includes(ex.id);
                 return (
@@ -116,15 +130,6 @@ export function ExerciseMultiSelectSheet({
                 <p className="text-center text-muted-foreground py-8">No exercises found</p>
               )}
             </div>
-
-            {/* Create new exercise row — always last */}
-            <button
-              onClick={() => setShowCreate(true)}
-              className="w-full flex items-center gap-3 p-3 mb-4 rounded-lg border border-dashed border-primary/40 text-primary hover:bg-primary/5 transition-colors"
-            >
-              <Plus className="w-5 h-5" />
-              <span className="text-sm font-medium">Create New Exercise</span>
-            </button>
           </div>
 
           {/* Staging tray */}

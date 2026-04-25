@@ -5,12 +5,12 @@ import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export function GoogleAuthButton() {
-  const [loading, setLoading] = useState(false);
-  const { user, signInWithGoogle } = useAuth();
+  const [signingIn, setSigningIn] = useState(false);
+  const { user, loading, signInWithGoogle } = useAuth();
   const { toast } = useToast();
 
   const handleSignIn = async () => {
-    setLoading(true);
+    setSigningIn(true);
     try {
       const result = await signInWithGoogle();
       if (result.error) {
@@ -27,16 +27,21 @@ export function GoogleAuthButton() {
         variant: 'destructive',
       });
     } finally {
-      setLoading(false);
+      setSigningIn(false);
     }
   };
+
+  // Stable placeholder during auth loading — never render null to avoid layout flash
+  if (loading) {
+    return <div className="h-8 w-8 rounded-full bg-secondary animate-pulse" />;
+  }
 
   if (user) {
     const displayName = user.user_metadata?.full_name || user.email || 'User';
     const avatarUrl = user.user_metadata?.avatar_url;
-    
+
     return (
-      <Avatar className="h-8 w-8">
+      <Avatar className="h-8 w-8 ring-1 ring-border">
         <AvatarImage src={avatarUrl} alt={displayName} />
         <AvatarFallback className="text-xs">
           {displayName[0]?.toUpperCase()}
@@ -50,7 +55,7 @@ export function GoogleAuthButton() {
       variant="outline"
       size="sm"
       onClick={handleSignIn}
-      disabled={loading}
+      disabled={signingIn}
       className="gap-2 text-foreground"
     >
       <svg className="w-4 h-4" viewBox="0 0 24 24">
@@ -71,7 +76,7 @@ export function GoogleAuthButton() {
           d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
         />
       </svg>
-      {loading ? 'Signing in...' : 'Sign in'}
+      {signingIn ? 'Signing in...' : 'Sign in'}
     </Button>
   );
 }
