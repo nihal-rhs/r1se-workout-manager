@@ -1,9 +1,9 @@
 import { memo, useCallback } from 'react';
-import { Check, Plus, Minus, Trash2, ChevronDown, Target } from 'lucide-react';
+import { Check, Plus, Minus, Trash2, ChevronDown, Target, ChevronsUpDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
-import { 
+import {
   SetType,
   SET_TYPE_SHORT_LABELS,
   INTENSITY_LABELS,
@@ -135,6 +135,9 @@ export const SetRow = memo(function SetRow({
     );
   }
 
+  const intensityIsUnset = !intensity || intensity === 'unspecified';
+  const setTypeIsUnset = !setType || setType === 'unspecified';
+
   return (
     <div
       className={`grid grid-cols-[48px_1fr_56px_64px_40px] gap-1 items-center p-2 rounded-lg transition-colors ${
@@ -142,20 +145,30 @@ export const SetRow = memo(function SetRow({
       }`}
     >
       {/* Set column */}
-      <Button
-        variant="ghost"
-        size="sm"
-        className={`h-9 px-1 text-xs font-medium text-foreground ${!isNormal ? 'text-primary' : ''}`}
-        onClick={onOpenSetTypePicker}
-      >
-        {isNormal ? (
-          <span className="text-sm text-foreground">{index + 1}</span>
-        ) : (
-          <span className="truncate text-primary">{SET_TYPE_SHORT_LABELS[setType]}</span>
-        )}
-        <ChevronDown className="w-3 h-3 ml-0.5 opacity-50 shrink-0" />
-      </Button>
-      
+      {setTypeIsUnset ? (
+        <button
+          onClick={onOpenSetTypePicker}
+          className="flex items-center gap-0.5 text-muted-foreground/40 hover:text-muted-foreground transition-colors text-xs justify-center min-h-[36px]"
+        >
+          <span className="text-sm">{index + 1}</span>
+          <ChevronsUpDown className="w-2.5 h-2.5" />
+        </button>
+      ) : (
+        <Button
+          variant="ghost"
+          size="sm"
+          className={`h-9 px-1 text-xs font-medium text-foreground ${!isNormal ? 'text-primary' : ''}`}
+          onClick={onOpenSetTypePicker}
+        >
+          {isNormal ? (
+            <span className="text-sm text-foreground">{index + 1}</span>
+          ) : (
+            <span className="truncate text-primary">{SET_TYPE_SHORT_LABELS[setType]}</span>
+          )}
+          <ChevronDown className="w-3 h-3 ml-0.5 opacity-50 shrink-0" />
+        </Button>
+      )}
+
       {/* Weight */}
       <div className="flex items-center gap-0.5">
         <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 text-foreground" onClick={handleWeightDecrement}>
@@ -166,17 +179,26 @@ export const SetRow = memo(function SetRow({
           <Plus className="w-3 h-3" />
         </Button>
       </div>
-      
+
       {/* Reps */}
       <Button variant="outline" size="sm" className="h-9 text-sm px-2 text-foreground" onClick={onOpenRepsPicker}>
         {reps !== null ? reps : '—'}
       </Button>
-      
+
       {/* Intensity */}
-      <Button variant="outline" size="sm" className="h-9 text-xs px-1 text-foreground" onClick={onOpenIntensityPicker}>
-        <span className="truncate">{intensity ? INTENSITY_LABELS[intensity] : '—'}</span>
-      </Button>
-      
+      {intensityIsUnset ? (
+        <button
+          onClick={onOpenIntensityPicker}
+          className="flex items-center gap-0.5 text-muted-foreground/40 hover:text-muted-foreground transition-colors text-xs justify-center min-h-[36px]"
+        >
+          <span>—</span><ChevronsUpDown className="w-2.5 h-2.5" />
+        </button>
+      ) : (
+        <Button variant="outline" size="sm" className="h-9 text-xs px-1 text-foreground" onClick={onOpenIntensityPicker}>
+          <span className="truncate">{INTENSITY_LABELS[intensity]}</span>
+        </Button>
+      )}
+
       {/* Actions */}
       <div className="flex items-center justify-end">
         {isEditMode ? (
