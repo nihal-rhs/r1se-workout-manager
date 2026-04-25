@@ -105,7 +105,7 @@ export default function AuthGate() {
               Continue with Google
             </Button>
 
-            <p className="text-center text-[11px] text-muted-foreground/80 leading-relaxed px-4">
+            <p className="text-center text-[12px] text-muted-foreground/80 leading-relaxed px-4">
               By continuing, you agree to our{' '}
               <span className="text-foreground/70 underline-offset-4 hover:underline cursor-pointer">Terms</span>
               {' '}and{' '}
