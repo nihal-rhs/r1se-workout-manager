@@ -547,6 +547,11 @@ export function GuidedWorkoutView({
             {currentSet.notes}
           </p>
         )}
+        {currentSet.setNote && (
+          <p className="mt-2 inline-block text-xs text-muted-foreground italic bg-secondary/40 border border-dashed border-border rounded-lg px-3 py-1.5 max-w-xs">
+            {currentSet.setNote}
+          </p>
+        )}
         {isChallenge ? (
           <div className="flex items-center justify-center gap-1 mt-1 text-primary">
             <Target className="w-4 h-4" />
