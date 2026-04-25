@@ -225,42 +225,66 @@ export function GuidedEditSheet({
                   {/* Planned sets */}
                   <div className="space-y-2">
                     <p className="text-xs text-muted-foreground">Planned</p>
-                    {we.sets.map((set, si) => (
-                      <div key={si} className="flex items-center gap-1 p-2 rounded-lg bg-secondary/50">
-                        <span className="text-xs text-muted-foreground w-8 text-center shrink-0">
-                          {completedForExercise.length + si + 1}
-                        </span>
-                        <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={() => updateSetWeight(we.exerciseId, si, set.weight - 2.5)}>
-                          <Minus className="w-3 h-3" />
-                        </Button>
-                        <Input
-                          type="number"
-                          value={set.weight}
-                          onChange={(e) => updateSetWeight(we.exerciseId, si, Number(e.target.value))}
-                          className="h-8 text-center min-w-0 w-16 text-foreground"
-                        />
-                        <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={() => updateSetWeight(we.exerciseId, si, set.weight + 2.5)}>
-                          <Plus className="w-3 h-3" />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-7 text-xs px-2"
-                          onClick={() => openIntensityPicker(we.exerciseId, si)}
-                        >
-                          {set.intensity ? INTENSITY_LABELS[set.intensity as IntensityLevel] : '2 RIR'}
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7 text-muted-foreground hover:text-destructive shrink-0"
-                          onClick={() => removeSetFromExercise(we.exerciseId, si)}
-                          disabled={we.sets.length === 1 && completedForExercise.length === 0}
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </Button>
-                      </div>
-                    ))}
+                    {we.sets.map((set, si) => {
+                      const hasNote = set.setNote !== undefined;
+                      return (
+                        <div key={si} className="space-y-1.5">
+                          <div className="flex items-center gap-1 p-2 rounded-lg bg-secondary/50">
+                            <span className="text-xs text-muted-foreground w-8 text-center shrink-0">
+                              {completedForExercise.length + si + 1}
+                            </span>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={() => updateSetWeight(we.exerciseId, si, set.weight - 2.5)}>
+                              <Minus className="w-3 h-3" />
+                            </Button>
+                            <Input
+                              type="number"
+                              value={set.weight}
+                              onChange={(e) => updateSetWeight(we.exerciseId, si, Number(e.target.value))}
+                              className="h-8 text-center min-w-0 w-16 text-foreground"
+                            />
+                            <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={() => updateSetWeight(we.exerciseId, si, set.weight + 2.5)}>
+                              <Plus className="w-3 h-3" />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-7 text-xs px-2"
+                              onClick={() => openIntensityPicker(we.exerciseId, si)}
+                            >
+                              {set.intensity ? INTENSITY_LABELS[set.intensity as IntensityLevel] : '2 RIR'}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className={`h-7 w-7 shrink-0 ${hasNote ? 'text-primary' : 'text-muted-foreground'}`}
+                              onClick={() => updateSetNote(we.exerciseId, si, hasNote ? '' : '')}
+                              aria-label="Toggle note"
+                              title="Toggle note"
+                            >
+                              <StickyNote className="w-3.5 h-3.5" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 text-muted-foreground hover:text-destructive shrink-0"
+                              onClick={() => removeSetFromExercise(we.exerciseId, si)}
+                              disabled={we.sets.length === 1 && completedForExercise.length === 0}
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </Button>
+                          </div>
+                          {hasNote && (
+                            <Input
+                              type="text"
+                              value={set.setNote ?? ''}
+                              onChange={(e) => updateSetNote(we.exerciseId, si, e.target.value)}
+                              placeholder="Note for this set..."
+                              className="h-8 text-xs italic border-dashed bg-secondary/30"
+                            />
+                          )}
+                        </div>
+                      );
+                    })}
                     <Button
                       variant="outline"
                       size="sm"
