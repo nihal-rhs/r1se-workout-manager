@@ -98,9 +98,7 @@ export default function AuthGate() {
               {loading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
-                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-background/95">
-                  <GoogleIcon />
-                </span>
+                <GoogleIcon />
               )}
               Continue with Google
             </Button>
