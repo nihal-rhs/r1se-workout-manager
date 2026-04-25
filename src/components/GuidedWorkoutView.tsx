@@ -85,6 +85,7 @@ export function GuidedWorkoutView({
           isChallenge: set.setType === 'challenge',
           targetReps: set.targetReps,
           notes: we.notes,
+          setNote: set.setNote,
         });
       });
     });
