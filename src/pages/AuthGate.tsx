@@ -3,16 +3,22 @@ import { Button } from '@/components/ui/button';
 import { R1SELogo } from '@/components/R1SELogo';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Dumbbell, LineChart, Zap } from 'lucide-react';
 
 const GoogleIcon = () => (
-  <svg className="w-4 h-4" viewBox="0 0 24 24">
-    <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-    <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-    <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-    <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+  <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" aria-hidden="true">
+    <path fill="#EA4335" d="M12 10.2v3.92h5.45c-.24 1.4-1.7 4.1-5.45 4.1-3.28 0-5.96-2.72-5.96-6.07S8.72 6.08 12 6.08c1.87 0 3.12.8 3.83 1.48l2.61-2.52C16.78 3.5 14.6 2.5 12 2.5 6.76 2.5 2.5 6.76 2.5 12s4.26 9.5 9.5 9.5c5.48 0 9.12-3.85 9.12-9.27 0-.62-.07-1.1-.16-1.57H12z"/>
+    <path fill="#34A853" d="M3.88 7.34l3.2 2.35C7.95 7.7 9.8 6.08 12 6.08c1.87 0 3.12.8 3.83 1.48l2.61-2.52C16.78 3.5 14.6 2.5 12 2.5 8.24 2.5 5 4.66 3.88 7.34z"/>
+    <path fill="#FBBC05" d="M12 21.5c2.55 0 4.7-.84 6.27-2.29l-2.98-2.43c-.82.57-1.92.97-3.29.97-2.53 0-4.68-1.7-5.45-4.01l-3.13 2.42C4.99 19.32 8.2 21.5 12 21.5z"/>
+    <path fill="#4285F4" d="M21.12 12.23c0-.62-.07-1.1-.16-1.57H12v3.92h5.45c-.22 1.27-1.4 3.07-3.16 3.86l2.98 2.43c1.78-1.65 2.85-4.08 2.85-7.04z"/>
   </svg>
 );
+
+const features = [
+  { icon: Dumbbell, label: 'Train' },
+  { icon: LineChart, label: 'Track' },
+  { icon: Zap, label: 'R1SE' },
+];
 
 export default function AuthGate() {
   const [loading, setLoading] = useState(false);
@@ -34,28 +40,91 @@ export default function AuthGate() {
   };
 
   return (
-    <div className="dark min-h-screen bg-background flex flex-col items-center justify-center px-6">
+    <div className="dark relative min-h-screen bg-background text-foreground flex flex-col overflow-hidden">
+      {/* Ambient neon glows */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-primary/6 blur-[150px]" />
-        <div className="absolute bottom-1/3 left-1/2 -translate-x-1/2 w-[300px] h-[300px] rounded-full bg-primary/4 blur-[100px]" />
+        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[640px] h-[640px] rounded-full bg-primary/[0.07] blur-[160px]" />
+        <div className="absolute bottom-[-180px] left-1/2 -translate-x-1/2 w-[420px] h-[420px] rounded-full bg-primary/[0.05] blur-[120px]" />
       </div>
-      <div className="relative z-10 flex flex-col items-center gap-12 w-full max-w-xs">
-        <div className="flex flex-col items-center gap-4">
-          <R1SELogo className="text-5xl text-primary" />
-          <p className="text-muted-foreground text-sm tracking-widest uppercase font-medium">
-            Train Smart, R1SE Harder
-          </p>
+
+      {/* Subtle grid texture */}
+      <div
+        className="absolute inset-0 opacity-[0.04] pointer-events-none"
+        style={{
+          backgroundImage:
+            'linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)',
+          backgroundSize: '48px 48px',
+          maskImage: 'radial-gradient(ellipse at center, black 30%, transparent 75%)',
+          WebkitMaskImage: 'radial-gradient(ellipse at center, black 30%, transparent 75%)',
+        }}
+      />
+
+      <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-12">
+        <div className="w-full max-w-sm flex flex-col items-center gap-14 animate-fade-in">
+          {/* Brand */}
+          <div className="flex flex-col items-center gap-5">
+            <div className="relative">
+              <div className="absolute inset-0 -m-6 rounded-full bg-primary/10 blur-2xl" aria-hidden="true" />
+              <R1SELogo className="relative text-6xl text-primary" />
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <div className="h-px w-12 bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
+              <p className="text-muted-foreground text-[11px] tracking-[0.3em] uppercase font-medium">
+                Train Smart · R1SE Harder
+              </p>
+            </div>
+          </div>
+
+          {/* Feature trio */}
+          <div className="flex items-center gap-8">
+            {features.map(({ icon: Icon, label }) => (
+              <div key={label} className="flex flex-col items-center gap-2">
+                <div className="h-10 w-10 rounded-full border border-border/60 bg-card/40 flex items-center justify-center backdrop-blur-sm">
+                  <Icon className="w-4 h-4 text-primary" strokeWidth={2} />
+                </div>
+                <span className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground font-medium">
+                  {label}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* Auth */}
+          <div className="w-full flex flex-col gap-4">
+            <Button
+              size="lg"
+              onClick={handleAuth}
+              disabled={loading}
+              glow
+              className="w-full h-12 text-sm font-semibold tracking-wide gap-3 rounded-xl"
+            >
+              {loading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-background/95">
+                  <GoogleIcon />
+                </span>
+              )}
+              Continue with Google
+            </Button>
+
+            <p className="text-center text-[11px] text-muted-foreground/80 leading-relaxed px-4">
+              By continuing, you agree to our{' '}
+              <span className="text-foreground/70 underline-offset-4 hover:underline cursor-pointer">Terms</span>
+              {' '}and{' '}
+              <span className="text-foreground/70 underline-offset-4 hover:underline cursor-pointer">Privacy Policy</span>.
+            </p>
+          </div>
         </div>
-        <div className="flex flex-col gap-3 w-full">
-          <Button size="lg" onClick={handleAuth} disabled={loading} glow className="w-full h-13 text-base font-semibold gap-2">
-            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <GoogleIcon />}
-            Join with Google
-          </Button>
-          <Button variant="outline" size="lg" onClick={handleAuth} disabled={loading} className="w-full h-13 text-base font-medium gap-2">
-            <GoogleIcon /> Login with Google
-          </Button>
+      </main>
+
+      {/* Footer mark */}
+      <footer className="relative z-10 pb-6 flex justify-center">
+        <div className="flex items-center gap-2 text-[10px] tracking-[0.3em] uppercase text-muted-foreground/60">
+          <span className="h-1 w-1 rounded-full bg-primary/70 animate-pulse" />
+          <span>Built for lifters</span>
         </div>
-      </div>
+      </footer>
     </div>
   );
 }
