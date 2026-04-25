@@ -736,24 +736,13 @@ export default function ActiveWorkout() {
                       <div className="flex items-center gap-1">
                         <button
                           onClick={() => {
-                            const we2 = workoutExercises[workoutExercises.findIndex(x => x.exerciseId === we.exerciseId)];
                             const idx = workoutExercises.findIndex(x => x.exerciseId === we.exerciseId);
                             if (idx === -1) return;
-                            const duplicate: WorkoutExercise = {
-                              ...we2,
-                              exerciseId: we2.exerciseId,
-                              sets: we2.sets.map(s => ({ ...s })),
-                            };
+                            const exercise = workoutExercises[idx];
+                            const duplicate: WorkoutExercise = { ...exercise, sets: exercise.sets.map(s => ({ ...s })) };
                             const updated = [...workoutExercises];
                             updated.splice(idx + 1, 0, duplicate);
                             setWorkoutExercises(updated);
-                            setExerciseLogs(prev => ({
-                              ...prev,
-                              [we.exerciseId]: [
-                                ...(prev[we.exerciseId] || []),
-                                ...(prev[we.exerciseId] || []).map(s => ({ ...s, completed: false, reps: null, challengeAccumulatedReps: 0 })),
-                              ],
-                            }));
                           }}
                           className="p-1.5 rounded-lg text-muted-foreground hover:text-primary transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
                           title="Duplicate exercise"
