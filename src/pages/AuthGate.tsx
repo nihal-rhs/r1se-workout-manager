@@ -6,11 +6,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Dumbbell, LineChart, Zap } from 'lucide-react';
 
 const GoogleIcon = () => (
-  <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" aria-hidden="true">
-    <path fill="#EA4335" d="M12 10.2v3.92h5.45c-.24 1.4-1.7 4.1-5.45 4.1-3.28 0-5.96-2.72-5.96-6.07S8.72 6.08 12 6.08c1.87 0 3.12.8 3.83 1.48l2.61-2.52C16.78 3.5 14.6 2.5 12 2.5 6.76 2.5 2.5 6.76 2.5 12s4.26 9.5 9.5 9.5c5.48 0 9.12-3.85 9.12-9.27 0-.62-.07-1.1-.16-1.57H12z"/>
-    <path fill="#34A853" d="M3.88 7.34l3.2 2.35C7.95 7.7 9.8 6.08 12 6.08c1.87 0 3.12.8 3.83 1.48l2.61-2.52C16.78 3.5 14.6 2.5 12 2.5 8.24 2.5 5 4.66 3.88 7.34z"/>
-    <path fill="#FBBC05" d="M12 21.5c2.55 0 4.7-.84 6.27-2.29l-2.98-2.43c-.82.57-1.92.97-3.29.97-2.53 0-4.68-1.7-5.45-4.01l-3.13 2.42C4.99 19.32 8.2 21.5 12 21.5z"/>
-    <path fill="#4285F4" d="M21.12 12.23c0-.62-.07-1.1-.16-1.57H12v3.92h5.45c-.22 1.27-1.4 3.07-3.16 3.86l2.98 2.43c1.78-1.65 2.85-4.08 2.85-7.04z"/>
+  <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" aria-hidden="true" fill="hsl(var(--primary))">
+    <path d="M12 10.2v3.92h5.45c-.24 1.4-1.7 4.1-5.45 4.1-3.28 0-5.96-2.72-5.96-6.07S8.72 6.08 12 6.08c1.87 0 3.12.8 3.83 1.48l2.61-2.52C16.78 3.5 14.6 2.5 12 2.5 6.76 2.5 2.5 6.76 2.5 12s4.26 9.5 9.5 9.5c5.48 0 9.12-3.85 9.12-9.27 0-.62-.07-1.1-.16-1.57H12z"/>
   </svg>
 );
 
@@ -68,21 +65,21 @@ export default function AuthGate() {
               <R1SELogo className="relative text-6xl text-primary" />
             </div>
             <div className="flex flex-col items-center gap-2">
-              <div className="h-px w-12 bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
-              <p className="text-muted-foreground text-[11px] tracking-[0.3em] uppercase font-medium">
+              <div className="h-px w-14 bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
+              <p className="text-muted-foreground text-[13px] tracking-[0.3em] uppercase font-medium">
                 Train Smart · R1SE Harder
               </p>
             </div>
           </div>
 
           {/* Feature trio */}
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-10">
             {features.map(({ icon: Icon, label }) => (
-              <div key={label} className="flex flex-col items-center gap-2">
-                <div className="h-10 w-10 rounded-full border border-border/60 bg-card/40 flex items-center justify-center backdrop-blur-sm">
-                  <Icon className="w-4 h-4 text-primary" strokeWidth={2} />
+              <div key={label} className="flex flex-col items-center gap-2.5">
+                <div className="h-12 w-12 rounded-full border border-border/60 bg-card/40 flex items-center justify-center backdrop-blur-sm">
+                  <Icon className="w-5 h-5 text-primary" strokeWidth={2} />
                 </div>
-                <span className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground font-medium">
+                <span className="text-[12px] tracking-[0.18em] uppercase text-muted-foreground font-medium">
                   {label}
                 </span>
               </div>
@@ -101,14 +98,14 @@ export default function AuthGate() {
               {loading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
-                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-background/95">
+                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-background">
                   <GoogleIcon />
                 </span>
               )}
               Continue with Google
             </Button>
 
-            <p className="text-center text-[11px] text-muted-foreground/80 leading-relaxed px-4">
+            <p className="text-center text-[12px] text-muted-foreground/80 leading-relaxed px-4">
               By continuing, you agree to our{' '}
               <span className="text-foreground/70 underline-offset-4 hover:underline cursor-pointer">Terms</span>
               {' '}and{' '}
@@ -120,7 +117,7 @@ export default function AuthGate() {
 
       {/* Footer mark */}
       <footer className="relative z-10 pb-6 flex justify-center">
-        <div className="flex items-center gap-2 text-[10px] tracking-[0.3em] uppercase text-muted-foreground/60">
+        <div className="flex items-center gap-2 text-[11px] tracking-[0.3em] uppercase text-muted-foreground/60">
           <span className="h-1 w-1 rounded-full bg-primary/70 animate-pulse" />
           <span>Built for lifters</span>
         </div>
