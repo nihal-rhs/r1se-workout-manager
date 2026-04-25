@@ -101,6 +101,7 @@ export default function ActiveWorkout() {
   const [setTypePicker, setSetTypePicker] = useState<{ exerciseId: string; setIndex: number } | null>(null);
   const [challengeRepsPicker, setChallengeRepsPicker] = useState<{ exerciseId: string; setIndex: number } | null>(null);
   const [showCreateExercise, setShowCreateExercise] = useState(false);
+  const [expandedSetNotes, setExpandedSetNotes] = useState<Set<string>>(new Set());
 
   // Captured picker values (FIX 1: avoid stale closures)
   const [currentPickerRepsValue, setCurrentPickerRepsValue] = useState(0);
@@ -345,9 +346,10 @@ export default function ActiveWorkout() {
             .map((s): CompletedSet => ({
               reps: s.setType === 'challenge' ? (s.challengeAccumulatedReps || s.reps || 0) : (s.reps || 0),
               weight: s.weight,
-              intensity: s.intensity || undefined,
-              setType: s.setType || undefined,
+              intensity: s.intensity && s.intensity !== 'unspecified' ? s.intensity : undefined,
+              setType: s.setType && s.setType !== 'unspecified' ? s.setType : undefined,
               targetReps: s.targetReps,
+              setNote: s.setNote || undefined,
             })),
         };
       });
@@ -443,9 +445,10 @@ export default function ActiveWorkout() {
       const completed = sets.filter(s => s.completed).map(s => ({
         reps: s.setType === 'challenge' ? (s.challengeAccumulatedReps || s.reps || 0) : (s.reps || 0),
         weight: s.weight,
-        intensity: s.intensity || undefined,
-        setType: s.setType || undefined,
+        intensity: s.intensity && s.intensity !== 'unspecified' ? s.intensity : undefined,
+        setType: s.setType && s.setType !== 'unspecified' ? s.setType : undefined,
         targetReps: s.targetReps,
+        setNote: s.setNote || undefined,
       }));
       if (completed.length > 0) {
         completedSetsMap[we.exerciseId] = completed;
