@@ -7,7 +7,15 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { useGlowStore } from "@/store/glowStore";
 import { useAuth } from "./hooks/useAuth";
 import { CloudSyncProvider } from "./components/CloudSyncProvider";
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect } from "react";
+import {
+  TodaySkeleton,
+  PlanSkeleton,
+  ProgressSkeleton,
+  HistorySkeleton,
+  WorkoutListSkeleton,
+  ExerciseListSkeleton,
+} from "./components/PageSkeleton";
 
 const Today = React.lazy(() => import('./pages/Today'));
 const Plan = React.lazy(() => import('./pages/Plan'));
@@ -36,31 +44,46 @@ const PageSpinner = () => (
 );
 
 const AuthenticatedRoutes = () => (
-  <Suspense fallback={<PageSpinner />}>
-    <Routes>
-      <Route path="/" element={<Today />} />
-      <Route path="/plan" element={<Plan />} />
-      <Route path="/workouts" element={<Workouts />} />
-      <Route path="/workout-plan" element={<WorkoutPlan />} />
-      <Route path="/exercises" element={<Exercises />} />
-      <Route path="/progress" element={<Progress />} />
-      <Route path="/history" element={<History />} />
-      <Route path="/create-workout" element={<CreateWorkout />} />
-      <Route path="/workout/:workoutId" element={<ActiveWorkout />} />
-      <Route path="/coach" element={<CoachDashboard />} />
-      <Route path="/coach/program/new" element={<ProgramBuilder />} />
-      <Route path="/coach/:coachId" element={<CoachPublicProfile />} />
-      <Route path="/marketplace" element={<Marketplace />} />
-      <Route path="/marketplace/:programId" element={<ProgramDetail />} />
-      <Route path="/messages" element={<Messages />} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
-  </Suspense>
+  <Routes>
+    <Route path="/" element={<Suspense fallback={<TodaySkeleton />}><Today /></Suspense>} />
+    <Route path="/plan" element={<Suspense fallback={<PlanSkeleton />}><Plan /></Suspense>} />
+    <Route path="/workouts" element={<Suspense fallback={<WorkoutListSkeleton />}><Workouts /></Suspense>} />
+    <Route path="/workout-plan" element={<Suspense fallback={<PlanSkeleton />}><WorkoutPlan /></Suspense>} />
+    <Route path="/exercises" element={<Suspense fallback={<ExerciseListSkeleton />}><Exercises /></Suspense>} />
+    <Route path="/progress" element={<Suspense fallback={<ProgressSkeleton />}><Progress /></Suspense>} />
+    <Route path="/history" element={<Suspense fallback={<HistorySkeleton />}><History /></Suspense>} />
+    <Route path="/create-workout" element={<Suspense fallback={<WorkoutListSkeleton />}><CreateWorkout /></Suspense>} />
+    <Route path="/workout/:workoutId" element={<Suspense fallback={<PageSpinner />}><ActiveWorkout /></Suspense>} />
+    <Route path="/coach" element={<Suspense fallback={<PageSpinner />}><CoachDashboard /></Suspense>} />
+    <Route path="/coach/program/new" element={<Suspense fallback={<PageSpinner />}><ProgramBuilder /></Suspense>} />
+    <Route path="/coach/:coachId" element={<Suspense fallback={<PageSpinner />}><CoachPublicProfile /></Suspense>} />
+    <Route path="/marketplace" element={<Suspense fallback={<PageSpinner />}><Marketplace /></Suspense>} />
+    <Route path="/marketplace/:programId" element={<Suspense fallback={<PageSpinner />}><ProgramDetail /></Suspense>} />
+    <Route path="/messages" element={<Suspense fallback={<PageSpinner />}><Messages /></Suspense>} />
+    <Route path="*" element={<Suspense fallback={<PageSpinner />}><NotFound /></Suspense>} />
+  </Routes>
 );
 
 const AppInner = () => {
   const glowEnabled = useGlowStore((s) => s.glowEnabled);
   const { user, loading } = useAuth();
+
+  // Preload main route bundles after mount so navigation is instant
+  useEffect(() => {
+    const imports = [
+      () => import('./pages/Today'),
+      () => import('./pages/Plan'),
+      () => import('./pages/Progress'),
+      () => import('./pages/History'),
+      () => import('./pages/Workouts'),
+      () => import('./pages/Exercises'),
+      () => import('./pages/WorkoutPlan'),
+      () => import('./pages/Marketplace'),
+    ];
+    imports.forEach((imp, i) => {
+      setTimeout(() => imp().catch(() => {}), i * 150);
+    });
+  }, []);
 
   if (loading) {
     return (
