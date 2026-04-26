@@ -8,7 +8,7 @@ import {
   SetType,
 } from '@/types/workout';
 import { Button } from '@/components/ui/button';
-import { Dumbbell, Save, X, Plus, Minus, StickyNote, ChevronDown } from 'lucide-react';
+import { Dumbbell, Save, X, Plus, Minus, ClipboardPen, ChevronDown } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -166,7 +166,7 @@ export function EditHistoryDialog({
                           )}
                           aria-label="Toggle note"
                         >
-                          <StickyNote className="w-3.5 h-3.5" />
+                          <ClipboardPen className="w-3.5 h-3.5" />
                         </button>
                       </div>
 

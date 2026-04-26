@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Minus, Trash2, Check, StickyNote } from 'lucide-react';
+import { Plus, Minus, Trash2, Check, ClipboardPen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -261,7 +261,7 @@ export function GuidedEditSheet({
                               aria-label="Toggle note"
                               title="Toggle note"
                             >
-                              <StickyNote className="w-3.5 h-3.5" />
+                              <ClipboardPen className="w-3.5 h-3.5" />
                             </Button>
                             <Button
                               variant="ghost"

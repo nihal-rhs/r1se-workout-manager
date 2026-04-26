@@ -1,5 +1,5 @@
 import { memo, useCallback } from 'react';
-import { Plus, Minus, Trash2, ChevronDown, Target, StickyNote } from 'lucide-react';
+import { Plus, Minus, Trash2, ChevronDown, Target, ClipboardPen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -59,7 +59,7 @@ export const CreateSetRow = memo(function CreateSetRow({
       )}
       aria-label="Toggle set note"
     >
-      <StickyNote className="w-3.5 h-3.5" />
+      <ClipboardPen className="w-3.5 h-3.5" />
     </button>
   ) : null;
   const noteInput = showNoteInput && onSetNoteChange ? (
