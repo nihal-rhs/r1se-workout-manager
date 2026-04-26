@@ -1,5 +1,5 @@
 import { memo, useCallback } from 'react';
-import { Plus, Minus, Trash2, ChevronDown, Target, StickyNote } from 'lucide-react';
+import { Plus, Minus, Trash2, ChevronDown, Target, ClipboardPen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -9,6 +9,7 @@ import {
   INTENSITY_LABELS,
   IntensityLevel,
 } from '@/types/workout';
+import { useWeightUnit, UNIT_STEP, UNIT_LABEL } from '@/store/weightUnitStore';
 
 interface CreateSetRowProps {
   index: number;
@@ -59,7 +60,7 @@ export const CreateSetRow = memo(function CreateSetRow({
       )}
       aria-label="Toggle set note"
     >
-      <StickyNote className="w-3.5 h-3.5" />
+      <ClipboardPen className="w-3.5 h-3.5" />
     </button>
   ) : null;
   const noteInput = showNoteInput && onSetNoteChange ? (
@@ -73,13 +74,16 @@ export const CreateSetRow = memo(function CreateSetRow({
   ) : null;
   const isChallenge = setType === 'challenge';
 
+  const unit = useWeightUnit((s) => s.unit);
+  const step = UNIT_STEP[unit];
+
   const handleWeightDecrement = useCallback(() => {
-    onWeightChange(Math.max(0, weight - 2.5));
-  }, [weight, onWeightChange]);
+    onWeightChange(Math.max(0, weight - step));
+  }, [weight, onWeightChange, step]);
 
   const handleWeightIncrement = useCallback(() => {
-    onWeightChange(weight + 2.5);
-  }, [weight, onWeightChange]);
+    onWeightChange(weight + step);
+  }, [weight, onWeightChange, step]);
 
   const handleWeightInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     onWeightChange(Number(e.target.value));
@@ -110,21 +114,22 @@ export const CreateSetRow = memo(function CreateSetRow({
           </Button>
           <div className="flex items-center gap-0.5">
             {noteButton}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 text-muted-foreground hover:text-destructive"
-              onClick={onRemoveSet}
-              disabled={isOnlySet}
-            >
-              <Trash2 className="w-4 h-4" />
-            </Button>
+            {!isOnlySet && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                onClick={onRemoveSet}
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            )}
           </div>
         </div>
 
         {/* Weight row */}
         <div className="space-y-1">
-          <label className="text-xs text-muted-foreground px-1">Weight (kg)</label>
+          <label className="text-xs text-muted-foreground px-1">Weight ({UNIT_LABEL[unit]})</label>
           <div className="flex items-center gap-1">
             <Button variant="outline" size="icon" className="h-9 w-9 shrink-0 text-foreground" onClick={handleWeightDecrement}>
               <Minus className="w-3 h-3" />
@@ -201,15 +206,18 @@ export const CreateSetRow = memo(function CreateSetRow({
         {noteButton}
         
         {/* Delete */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 text-muted-foreground hover:text-destructive"
-          onClick={onRemoveSet}
-          disabled={isOnlySet}
-        >
-          <Trash2 className="w-4 h-4" />
-        </Button>
+        {!isOnlySet ? (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground hover:text-destructive"
+            onClick={onRemoveSet}
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        ) : (
+          <span aria-hidden="true" />
+        )}
       </div>
       {noteInput && <div className="px-2">{noteInput}</div>}
     </div>

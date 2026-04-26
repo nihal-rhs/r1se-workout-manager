@@ -9,6 +9,7 @@ import {
   INTENSITY_LABELS,
   IntensityLevel,
 } from '@/types/workout';
+import { useWeightUnit, UNIT_STEP, UNIT_LABEL } from '@/store/weightUnitStore';
 
 interface SetRowProps {
   index: number;
@@ -49,14 +50,16 @@ export const SetRow = memo(function SetRow({
 }: SetRowProps) {
   const isNormal = setType === 'normal';
   const isChallenge = setType === 'challenge';
+  const unit = useWeightUnit((s) => s.unit);
+  const step = UNIT_STEP[unit];
 
   const handleWeightDecrement = useCallback(() => {
-    onWeightChange(Math.max(0, weight - 2.5));
-  }, [weight, onWeightChange]);
+    onWeightChange(Math.max(0, weight - step));
+  }, [weight, onWeightChange, step]);
 
   const handleWeightIncrement = useCallback(() => {
-    onWeightChange(weight + 2.5);
-  }, [weight, onWeightChange]);
+    onWeightChange(weight + step);
+  }, [weight, onWeightChange, step]);
 
   const handleWeightInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     onWeightChange(Number(e.target.value));
@@ -84,15 +87,14 @@ export const SetRow = memo(function SetRow({
               Challenge
               <ChevronDown className="w-3 h-3 ml-0.5 opacity-50" />
             </Button>
-            <span className="text-sm text-foreground font-medium">{weight}kg</span>
+            <span className="text-sm text-foreground font-medium">{weight} <span className="text-[10px] text-muted-foreground">{UNIT_LABEL[unit]}</span></span>
           </div>
-          {isEditMode && (
+          {isEditMode && !isOnlySet && (
             <Button
               variant="ghost"
               size="icon"
               className="h-8 w-8 text-muted-foreground hover:text-destructive"
               onClick={onRemoveSet}
-              disabled={isOnlySet}
             >
               <Trash2 className="w-4 h-4" />
             </Button>
@@ -202,15 +204,16 @@ export const SetRow = memo(function SetRow({
       {/* Actions */}
       <div className="flex items-center justify-end">
         {isEditMode ? (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-9 w-9 text-muted-foreground hover:text-destructive"
-            onClick={onRemoveSet}
-            disabled={isOnlySet}
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
+          !isOnlySet ? (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 text-muted-foreground hover:text-destructive"
+              onClick={onRemoveSet}
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          ) : null
         ) : (
           <Button
             variant={completed ? 'default' : 'outline'}

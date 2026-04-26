@@ -13,15 +13,21 @@ import {
 import { exercises } from '@/data/exercises';
 import { useWorkoutStore } from '@/store/workoutStore';
 import { useExerciseSearch } from '@/lib/exerciseSearch';
-import { Search, SlidersHorizontal, Check, X } from 'lucide-react';
+import { useMuscleStore } from '@/store/muscleStore';
+import { Search, SlidersHorizontal, Check, X, MoreVertical, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const Exercises = () => {
   const [search, setSearch] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [showLibrary, setShowLibrary] = useState(false);
+  const [newMuscleName, setNewMuscleName] = useState('');
   const [selectedMuscles, setSelectedMuscles] = useState<string[]>([]);
   const [customOnly, setCustomOnly] = useState(false);
   const customExercises = useWorkoutStore((state) => state.customExercises);
+  const muscles = useMuscleStore((s) => s.muscles);
+  const addMuscle = useMuscleStore((s) => s.addMuscle);
+  const deleteMuscle = useMuscleStore((s) => s.deleteMuscle);
 
   const allExercises = [...exercises, ...customExercises];
   const filteredExercises = useExerciseSearch(allExercises, search);
@@ -65,6 +71,13 @@ const Exercises = () => {
     setCustomOnly(false);
   };
 
+  const handleAddMuscle = () => {
+    const trimmed = newMuscleName.trim();
+    if (!trimmed) return;
+    addMuscle(trimmed);
+    setNewMuscleName('');
+  };
+
   return (
     <Layout>
       <div className="container max-w-lg animate-fade-in px-4">
@@ -75,8 +88,16 @@ const Exercises = () => {
               {allExercises.length} exercises available
             </p>
           </div>
-          <div className="shrink-0 pt-1">
+          <div className="shrink-0 pt-1 flex items-center gap-1">
             <CreateExerciseDialog />
+            <button
+              type="button"
+              onClick={() => setShowLibrary(true)}
+              aria-label="Muscle library"
+              className="h-10 w-10 flex items-center justify-center rounded-xl border border-border bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <MoreVertical className="w-4 h-4" />
+            </button>
           </div>
         </div>
 
@@ -227,6 +248,60 @@ const Exercises = () => {
               Show {displayedExercises.length} exercise
               {displayedExercises.length !== 1 ? 's' : ''}
             </button>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Muscle Library sheet */}
+      <Sheet open={showLibrary} onOpenChange={setShowLibrary}>
+        <SheetContent side="bottom" className="h-[70vh] flex flex-col p-0">
+          <SheetHeader className="px-5 pt-5 pb-3 border-b border-border/50 space-y-1">
+            <SheetTitle className="text-left">Muscle Library</SheetTitle>
+            <p className="text-xs text-muted-foreground text-left">
+              Muscles used across your exercises. Deleting a muscle does not affect existing exercises.
+            </p>
+          </SheetHeader>
+
+          <div className="px-5 pt-4 pb-3 border-b border-border/50">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={newMuscleName}
+                onChange={(e) => setNewMuscleName(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleAddMuscle()}
+                placeholder="Add new muscle..."
+                className="flex-1 bg-secondary border border-border rounded-xl px-4 py-2.5 text-sm text-foreground focus:outline-none focus:border-primary/50 min-h-[44px]"
+              />
+              <button
+                type="button"
+                onClick={handleAddMuscle}
+                className="px-4 rounded-xl bg-primary text-primary-foreground text-sm font-semibold min-h-[44px]"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+
+          <div className="flex-1 overflow-y-auto px-5 py-3 space-y-1.5">
+            {muscles.length === 0 && (
+              <p className="text-center text-muted-foreground py-8 text-sm">No muscles in library</p>
+            )}
+            {muscles.map((muscle) => (
+              <div
+                key={muscle}
+                className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-secondary/50 border border-border/50 min-h-[44px]"
+              >
+                <span className="text-sm text-foreground">{muscle}</span>
+                <button
+                  type="button"
+                  onClick={() => deleteMuscle(muscle)}
+                  className="p-1.5 text-muted-foreground hover:text-destructive transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+                  aria-label={`Delete ${muscle}`}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
           </div>
         </SheetContent>
       </Sheet>

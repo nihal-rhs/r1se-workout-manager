@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { Plus, Pencil, Trash2, X, Pause, ArrowLeftRight, Info, Copy as Copy2, StickyNote, GripVertical } from 'lucide-react';
+import { Plus, Pencil, Trash2, X, Pause, ArrowLeftRight, Info, Copy as Copy2, ClipboardPen, GripVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PausePreferenceDialog } from '@/components/PausePreferenceDialog';
 import { Input } from '@/components/ui/input';
@@ -811,7 +811,7 @@ export default function ActiveWorkout() {
                               className={`flex items-center justify-center min-w-[44px] min-h-[28px] text-[10px] transition-colors ${note ? 'text-primary' : 'text-muted-foreground/60 hover:text-muted-foreground'}`}
                               title="Set note"
                             >
-                              <StickyNote className="w-3 h-3" />
+                              <ClipboardPen className="w-3 h-3" />
                             </button>
                             {noteOpen ? (
                               <input

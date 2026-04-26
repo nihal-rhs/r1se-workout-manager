@@ -8,7 +8,7 @@ import {
   SetType,
 } from '@/types/workout';
 import { Button } from '@/components/ui/button';
-import { Dumbbell, Save, X, Plus, Minus, StickyNote, ChevronDown } from 'lucide-react';
+import { Dumbbell, Save, X, Plus, Minus, ClipboardPen, ChevronDown } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -21,6 +21,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
+import { useWeightUnit, UNIT_STEP, UNIT_LABEL } from '@/store/weightUnitStore';
 
 interface EditHistoryDialogProps {
   log: WorkoutLog | null;
@@ -50,6 +51,8 @@ export function EditHistoryDialog({
   onOpenChange,
   onSave,
 }: EditHistoryDialogProps) {
+  const unit = useWeightUnit((s) => s.unit);
+  const step = UNIT_STEP[unit];
   const [editData, setEditData] = useState<WorkoutLog | null>(null);
   const [expandedNotes, setExpandedNotes] = useState<Set<string>>(new Set());
 
@@ -166,7 +169,7 @@ export function EditHistoryDialog({
                           )}
                           aria-label="Toggle note"
                         >
-                          <StickyNote className="w-3.5 h-3.5" />
+                          <ClipboardPen className="w-3.5 h-3.5" />
                         </button>
                       </div>
 
@@ -179,7 +182,7 @@ export function EditHistoryDialog({
                           <button
                             type="button"
                             onClick={() =>
-                              updateSet(ei, si, 'weight', Math.max(0, set.weight - 2.5))
+                              updateSet(ei, si, 'weight', Math.max(0, set.weight - step))
                             }
                             className="w-9 h-9 rounded-lg bg-background border border-border flex items-center justify-center text-foreground hover:border-primary/40 transition-colors"
                             aria-label="Decrease weight"
@@ -189,13 +192,13 @@ export function EditHistoryDialog({
                           <span className="text-base font-bold text-foreground tabular-nums flex-1 text-center">
                             {set.weight}
                             <span className="text-[10px] font-normal text-muted-foreground ml-1">
-                              kg
+                              {UNIT_LABEL[unit]}
                             </span>
                           </span>
                           <button
                             type="button"
                             onClick={() =>
-                              updateSet(ei, si, 'weight', set.weight + 2.5)
+                              updateSet(ei, si, 'weight', set.weight + step)
                             }
                             className="w-9 h-9 rounded-lg bg-background border border-border flex items-center justify-center text-foreground hover:border-primary/40 transition-colors"
                             aria-label="Increase weight"

@@ -15,6 +15,7 @@ import { generateKeywords, muscleToCategory } from '@/lib/exerciseSearch';
 import { toast } from 'sonner';
 import { useCloudSync } from '@/hooks/useCloudSync';
 import { useAuth } from '@/hooks/useAuth';
+import { MuscleInput } from './MuscleInput';
 
 interface InlineCreateExerciseDialogProps {
   open: boolean;
@@ -28,18 +29,17 @@ export function InlineCreateExerciseDialog({
   onExerciseCreated,
 }: InlineCreateExerciseDialogProps) {
   const [name, setName] = useState('');
-  const [musclesInput, setMusclesInput] = useState('');
+  const [muscles, setMuscles] = useState<string[]>([]);
   const [description, setDescription] = useState('');
 
   const addCustomExercise = useWorkoutStore((state) => state.addCustomExercise);
   const { user } = useAuth();
   const { pushExercise } = useCloudSync();
 
-  // Reset form when dialog opens
   useEffect(() => {
     if (open) {
       setName('');
-      setMusclesInput('');
+      setMuscles([]);
       setDescription('');
     }
   }, [open]);
@@ -49,15 +49,11 @@ export function InlineCreateExerciseDialog({
       toast.error('Please enter an exercise name');
       return;
     }
-    if (!musclesInput.trim()) {
-      toast.error('Please enter at least one muscle');
+    if (muscles.length === 0) {
+      toast.error('Please select at least one muscle');
       return;
     }
 
-    const muscles = musclesInput
-      .split(/[,\/]/)
-      .map((s) => s.trim())
-      .filter(Boolean);
     const category = muscleToCategory(muscles[0]);
 
     const newExercise: Exercise = {
@@ -72,17 +68,14 @@ export function InlineCreateExerciseDialog({
       isCustom: true,
     };
 
-    // Add to local state
     addCustomExercise(newExercise);
 
-    // Sync to cloud if logged in
     if (user) {
       await pushExercise(newExercise);
     }
 
     toast.success('Exercise created!');
 
-    // Close dialog and notify parent with new exercise ID
     onOpenChange(false);
     onExerciseCreated(newExercise.id);
   };
@@ -110,15 +103,10 @@ export function InlineCreateExerciseDialog({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="inline-muscles">Muscles (separate with comma or /)</Label>
-            <Input
-              id="inline-muscles"
-              placeholder="e.g., Quadriceps, Glutes"
-              value={musclesInput}
-              onChange={(e) => setMusclesInput(e.target.value)}
-            />
+            <Label>Muscles</Label>
+            <MuscleInput value={muscles} onChange={setMuscles} placeholder="Search or add muscles..." />
             <p className="text-xs text-muted-foreground">
-              e.g. "Upper Chest / Triceps Lateral Head"
+              First selected becomes the primary muscle group.
             </p>
           </div>
 

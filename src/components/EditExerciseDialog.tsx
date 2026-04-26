@@ -6,21 +6,12 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { useWorkoutStore } from '@/store/workoutStore';
 import { Exercise } from '@/types/workout';
-import { allMuscleGroups } from '@/data/exercises';
-import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { useHeaderContext } from './Layout';
+import { MuscleInput } from './MuscleInput';
 
 interface EditExerciseDialogProps {
   exercise: Exercise;
@@ -29,37 +20,32 @@ interface EditExerciseDialogProps {
 }
 
 export function EditExerciseDialog({ exercise, open, onOpenChange }: EditExerciseDialogProps) {
-  const { customMuscleGroups, exerciseMuscleOverrides, addCustomMuscleGroup, setExerciseMuscleGroup } = useWorkoutStore();
+  const { exerciseMuscleOverrides, setExerciseMuscleGroup } = useWorkoutStore();
   const { setIsOverlayOpen } = useHeaderContext();
 
-  const combinedMuscleGroups = [...new Set([...allMuscleGroups, ...customMuscleGroups])].sort();
-
-  const currentMuscleGroup = exerciseMuscleOverrides[exercise.id] || exercise.muscleGroup;
-  const [selectedMuscleGroup, setSelectedMuscleGroup] = useState(currentMuscleGroup);
-  const [newMuscleGroup, setNewMuscleGroup] = useState('');
-  const [showAddNew, setShowAddNew] = useState(false);
+  const overridden = exerciseMuscleOverrides[exercise.id];
+  const initialMuscles = overridden ? [overridden] : exercise.muscles;
+  const [muscles, setMuscles] = useState<string[]>(initialMuscles);
 
   useEffect(() => {
     setIsOverlayOpen(open);
   }, [open, setIsOverlayOpen]);
 
-  const handleSave = () => {
-    setExerciseMuscleGroup(exercise.id, selectedMuscleGroup);
-    toast.success('Muscle group updated!');
-    onOpenChange(false);
-  };
+  useEffect(() => {
+    if (open) {
+      const o = exerciseMuscleOverrides[exercise.id];
+      setMuscles(o ? [o] : exercise.muscles);
+    }
+  }, [open, exercise.id, exercise.muscles, exerciseMuscleOverrides]);
 
-  const handleAddNewMuscleGroup = () => {
-    if (!newMuscleGroup.trim()) {
-      toast.error('Please enter a muscle group name');
+  const handleSave = () => {
+    if (muscles.length === 0) {
+      toast.error('Please select at least one muscle');
       return;
     }
-    const trimmed = newMuscleGroup.trim();
-    addCustomMuscleGroup(trimmed);
-    setSelectedMuscleGroup(trimmed);
-    setNewMuscleGroup('');
-    setShowAddNew(false);
-    toast.success('Muscle group added!');
+    setExerciseMuscleGroup(exercise.id, muscles[0]);
+    toast.success('Exercise updated!');
+    onOpenChange(false);
   };
 
   return (
@@ -69,62 +55,18 @@ export function EditExerciseDialog({ exercise, open, onOpenChange }: EditExercis
           <DialogTitle>Edit Exercise</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 pt-4">
-          <div className="space-y-2">
+          <div className="space-y-1">
             <Label>Exercise</Label>
             <p className="text-sm text-muted-foreground">{exercise.name}</p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="muscleGroup">Primary Muscle Group</Label>
-            <Select value={selectedMuscleGroup} onValueChange={setSelectedMuscleGroup}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {combinedMuscleGroups.map((mg) => (
-                  <SelectItem key={mg} value={mg}>
-                    {mg}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Label>Muscles</Label>
+            <MuscleInput value={muscles} onChange={setMuscles} placeholder="Search or add muscles..." />
+            <p className="text-xs text-muted-foreground">
+              First selected becomes the primary muscle group.
+            </p>
           </div>
-
-          {!showAddNew ? (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowAddNew(true)}
-              className="w-full"
-            >
-              <Plus className="w-4 h-4 mr-1" />
-              Add Custom Muscle Group
-            </Button>
-          ) : (
-            <div className="space-y-2 p-3 border rounded-lg bg-secondary/30">
-              <Label htmlFor="newMuscleGroup">New Muscle Group</Label>
-              <div className="flex gap-2">
-                <Input
-                  id="newMuscleGroup"
-                  placeholder="e.g., Hip Flexors"
-                  value={newMuscleGroup}
-                  onChange={(e) => setNewMuscleGroup(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleAddNewMuscleGroup()}
-                />
-                <Button size="sm" onClick={handleAddNewMuscleGroup}>
-                  Add
-                </Button>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowAddNew(false)}
-                className="w-full"
-              >
-                Cancel
-              </Button>
-            </div>
-          )}
 
           <Button onClick={handleSave} className="w-full">
             Save Changes
