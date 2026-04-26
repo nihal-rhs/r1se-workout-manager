@@ -24,6 +24,7 @@ import { ExerciseMultiSelectSheet } from '@/components/ExerciseMultiSelectSheet'
 import { useUndoHistory } from '@/hooks/useUndoHistory';
 import { useDraggableList } from '@/hooks/useDraggableList';
 import { GripVertical } from 'lucide-react';
+import { WeightUnitSwitcher } from '@/components/WeightUnitSwitcher';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -363,6 +364,7 @@ export default function CreateWorkout() {
             </div>
           </div>
           <div className="flex items-center gap-1">
+            {step === 'configure' && <WeightUnitSwitcher />}
             {/* Undo button */}
             <Button
               variant="ghost"
