@@ -110,15 +110,16 @@ export const CreateSetRow = memo(function CreateSetRow({
           </Button>
           <div className="flex items-center gap-0.5">
             {noteButton}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 text-muted-foreground hover:text-destructive"
-              onClick={onRemoveSet}
-              disabled={isOnlySet}
-            >
-              <Trash2 className="w-4 h-4" />
-            </Button>
+            {!isOnlySet && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                onClick={onRemoveSet}
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            )}
           </div>
         </div>
 
@@ -201,15 +202,18 @@ export const CreateSetRow = memo(function CreateSetRow({
         {noteButton}
         
         {/* Delete */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 text-muted-foreground hover:text-destructive"
-          onClick={onRemoveSet}
-          disabled={isOnlySet}
-        >
-          <Trash2 className="w-4 h-4" />
-        </Button>
+        {!isOnlySet ? (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground hover:text-destructive"
+            onClick={onRemoveSet}
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        ) : (
+          <span aria-hidden="true" />
+        )}
       </div>
       {noteInput && <div className="px-2">{noteInput}</div>}
     </div>

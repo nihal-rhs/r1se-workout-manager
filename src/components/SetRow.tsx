@@ -86,13 +86,12 @@ export const SetRow = memo(function SetRow({
             </Button>
             <span className="text-sm text-foreground font-medium">{weight}kg</span>
           </div>
-          {isEditMode && (
+          {isEditMode && !isOnlySet && (
             <Button
               variant="ghost"
               size="icon"
               className="h-8 w-8 text-muted-foreground hover:text-destructive"
               onClick={onRemoveSet}
-              disabled={isOnlySet}
             >
               <Trash2 className="w-4 h-4" />
             </Button>
@@ -202,15 +201,16 @@ export const SetRow = memo(function SetRow({
       {/* Actions */}
       <div className="flex items-center justify-end">
         {isEditMode ? (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-9 w-9 text-muted-foreground hover:text-destructive"
-            onClick={onRemoveSet}
-            disabled={isOnlySet}
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
+          !isOnlySet ? (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 text-muted-foreground hover:text-destructive"
+              onClick={onRemoveSet}
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          ) : null
         ) : (
           <Button
             variant={completed ? 'default' : 'outline'}

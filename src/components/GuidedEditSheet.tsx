@@ -263,15 +263,16 @@ export function GuidedEditSheet({
                             >
                               <ClipboardPen className="w-3.5 h-3.5" />
                             </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-7 w-7 text-muted-foreground hover:text-destructive shrink-0"
-                              onClick={() => removeSetFromExercise(we.exerciseId, si)}
-                              disabled={we.sets.length === 1 && completedForExercise.length === 0}
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </Button>
+                            {!(we.sets.length === 1 && completedForExercise.length === 0) && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 text-muted-foreground hover:text-destructive shrink-0"
+                                onClick={() => removeSetFromExercise(we.exerciseId, si)}
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </Button>
+                            )}
                           </div>
                           {hasNote && (
                             <Input
