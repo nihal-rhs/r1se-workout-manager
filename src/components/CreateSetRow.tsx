@@ -9,6 +9,7 @@ import {
   INTENSITY_LABELS,
   IntensityLevel,
 } from '@/types/workout';
+import { useWeightUnit, UNIT_STEP, UNIT_LABEL } from '@/store/weightUnitStore';
 
 interface CreateSetRowProps {
   index: number;
@@ -73,13 +74,16 @@ export const CreateSetRow = memo(function CreateSetRow({
   ) : null;
   const isChallenge = setType === 'challenge';
 
+  const unit = useWeightUnit((s) => s.unit);
+  const step = UNIT_STEP[unit];
+
   const handleWeightDecrement = useCallback(() => {
-    onWeightChange(Math.max(0, weight - 2.5));
-  }, [weight, onWeightChange]);
+    onWeightChange(Math.max(0, weight - step));
+  }, [weight, onWeightChange, step]);
 
   const handleWeightIncrement = useCallback(() => {
-    onWeightChange(weight + 2.5);
-  }, [weight, onWeightChange]);
+    onWeightChange(weight + step);
+  }, [weight, onWeightChange, step]);
 
   const handleWeightInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     onWeightChange(Number(e.target.value));
@@ -125,7 +129,7 @@ export const CreateSetRow = memo(function CreateSetRow({
 
         {/* Weight row */}
         <div className="space-y-1">
-          <label className="text-xs text-muted-foreground px-1">Weight (kg)</label>
+          <label className="text-xs text-muted-foreground px-1">Weight ({UNIT_LABEL[unit]})</label>
           <div className="flex items-center gap-1">
             <Button variant="outline" size="icon" className="h-9 w-9 shrink-0 text-foreground" onClick={handleWeightDecrement}>
               <Minus className="w-3 h-3" />
