@@ -41,6 +41,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { InlineCreateExerciseDialog } from '@/components/InlineCreateExerciseDialog';
 import { ExerciseMultiSelectSheet } from '@/components/ExerciseMultiSelectSheet';
+import { WeightUnitSwitcher } from '@/components/WeightUnitSwitcher';
 
 interface SetLog {
   weight: number;
@@ -675,6 +676,7 @@ export default function ActiveWorkout() {
             </div>
             <div className="flex items-center gap-2">
               <span className="text-lg font-mono text-primary">{formatTime(elapsed)}</span>
+              <WeightUnitSwitcher />
               <Button
                 variant="ghost"
                 size="sm"
